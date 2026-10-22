@@ -219,13 +219,22 @@ p { margin: 0; }
   background: linear-gradient(135deg, var(--accent-soft), var(--surface) 70%);
   border-left: 4px solid var(--accent-fill);
 }
-.card-thought .label {
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   color: var(--accent);
   font-size: 13px;
   font-weight: 700;
   letter-spacing: .06em;
   text-transform: uppercase;
 }
+.label .icon { width: 18px; height: 18px; }
+
+.card-link { color: inherit; text-decoration: none; transition: transform .12s ease, border-color .2s ease; }
+.card-link:hover { border-color: var(--accent-fill); }
+.card-link:active { transform: scale(.985); }
+
 .card-thought blockquote { margin: 0; font-size: 17px; }
 .card-thought cite { color: var(--muted); font-size: 14px; font-style: normal; }
 
@@ -275,6 +284,83 @@ p { margin: 0; }
 .list-item-title { font-weight: 650; }
 .list-item-subtitle { color: var(--muted); font-size: 14px; }
 .list-item .chevron { width: 20px; height: 20px; color: var(--muted); }
+.list-item-icon { font-weight: 700; }
+.list-item.is-done .list-item-icon { background: color-mix(in srgb, var(--success) 16%, transparent); color: var(--success); }
+
+/* ===== «Сенс» ===== */
+.goal-card { color: inherit; text-decoration: none; }
+.goal-card:hover { border-color: var(--accent-fill); }
+.goal-preview {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 17px;
+  white-space: pre-line;
+}
+
+.verse-card {
+  margin: 0;
+  background: linear-gradient(135deg, var(--accent-soft), var(--surface) 75%);
+  border-left: 4px solid var(--accent-fill);
+}
+.verse-card blockquote {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 19px;
+  line-height: 1.5;
+}
+.verse-card figcaption { color: var(--muted); font-size: 14px; }
+
+.prose { display: flex; flex-direction: column; gap: 12px; font-size: 17px; line-height: 1.65; }
+.prose h3 { margin-top: 8px; font-size: 19px; }
+.prose ul { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 6px; }
+
+.question { font-size: 17px; font-weight: 600; }
+
+.pager { display: flex; justify-content: space-between; gap: 10px; }
+.pager .btn { flex: 1; max-width: 50%; padding: 0 12px; }
+.pager .btn:only-child { margin-left: auto; }
+
+/* ===== Поля вводу ===== */
+.field {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  line-height: 1.5;
+  transition: border-color .2s ease;
+}
+.field:focus { outline: none; border-color: var(--accent-fill); }
+textarea.field { resize: vertical; }
+.field-label { font-weight: 600; font-size: 15px; }
+.save-hint { min-height: 1.2em; font-size: 13px; }
+
+.check-list { display: flex; flex-direction: column; }
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+}
+.check-item:last-child { border-bottom: 0; }
+.check-item-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-height: 52px;
+  cursor: pointer;
+}
+.check-item input { width: 22px; height: 22px; flex: none; accent-color: var(--success); }
+.check-item.is-done span { color: var(--muted); text-decoration: line-through; }
+
+.add-row { display: flex; gap: 8px; }
+.add-row .btn { flex: none; width: 52px; padding: 0; }
 
 /* ===== Кнопки ===== */
 .btn {

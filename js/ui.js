@@ -12,7 +12,11 @@ const UI = (() => {
     chevronLeft: '<path d="M15 18l-6-6 6-6"/>',
     download: '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
     upload: '<path d="M12 20V9M7 14l5-5 5 5M5 4h14"/>',
-    play: '<path d="M8 5l11 7-11 7z"/>'
+    play: '<path d="M8 5l11 7-11 7z"/>',
+    check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+    target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+    trash: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>'
   };
 
   function icon(name, cls = 'icon') {
@@ -36,17 +40,62 @@ const UI = (() => {
       </div>`;
   }
 
-  // Пункт списку-посилання
-  function listItem({ href, title, subtitle, iconName }) {
+  // Пункт списку-посилання; lead — короткий текст замість іконки (наприклад, номер),
+  // done — позначка «пройдено»
+  function listItem({ href, title, subtitle, iconName, lead, done }) {
+    const leading = iconName ? icon(iconName) : lead !== undefined ? esc(lead) : '';
     return `
-      <a class="list-item" href="#${href}">
-        ${iconName ? `<span class="list-item-icon">${icon(iconName)}</span>` : ''}
+      <a class="list-item${done ? ' is-done' : ''}" href="#${href}">
+        ${leading ? `<span class="list-item-icon">${done ? icon('check') : leading}</span>` : ''}
         <span class="list-item-text">
           <span class="list-item-title">${esc(title)}</span>
           ${subtitle ? `<span class="list-item-subtitle">${esc(subtitle)}</span>` : ''}
         </span>
         ${icon('chevronRight', 'icon chevron')}
       </a>`;
+  }
+
+  // Простий текст із data.js → HTML: абзаци, списки "- ", підзаголовки "## ", **жирний**
+  function richText(text) {
+    const inline = s => esc(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    return String(text || '').split(/\n\s*\n/).map(block => {
+      const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
+      if (!lines.length) return '';
+      if (lines.every(l => l.startsWith('- '))) {
+        return `<ul>${lines.map(l => `<li>${inline(l.slice(2))}</li>`).join('')}</ul>`;
+      }
+      if (lines.length === 1 && lines[0].startsWith('## ')) {
+        return `<h3>${inline(lines[0].slice(3))}</h3>`;
+      }
+      return `<p>${lines.map(inline).join('<br>')}</p>`;
+    }).join('');
+  }
+
+  // Номер дня за місцевим часом — однаковий протягом доби (для «Думки дня»)
+  function dayNumber() {
+    const now = new Date();
+    return Math.floor((now - now.getTimezoneOffset() * 60000) / 86400000);
+  }
+
+  // Відкладений виклик: для автозбереження тексту під час набору
+  function debounce(fn, ms = 400) {
+    let t;
+    return (...args) => {
+      clearTimeout(t);
+      t = setTimeout(() => fn(...args), ms);
+    };
+  }
+
+  // Автозбереження поля вводу з написом «Збережено»
+  function autosave(field, hint, save) {
+    const commit = debounce(() => {
+      const ok = save(field.value);
+      hint.textContent = ok ? 'Збережено ✓' : 'Не вдалося зберегти';
+    });
+    field.addEventListener('input', () => {
+      hint.textContent = '…';
+      commit();
+    });
   }
 
   // Тимчасова заглушка розділу, поки він не наповнений
@@ -85,5 +134,8 @@ const UI = (() => {
     document.getElementById('theme-color').content = dark ? '#0c1322' : '#f6f4ef';
   }
 
-  return { icon, esc, pageHead, listItem, sectionStub, toast, applyTheme, darkQuery };
+  return {
+    icon, esc, pageHead, listItem, richText, dayNumber, debounce, autosave,
+    sectionStub, toast, applyTheme, darkQuery
+  };
 })();

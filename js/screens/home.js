@@ -11,12 +11,6 @@
     return 'Доброї ночі';
   }
 
-  // Номер дня від початку епохи за місцевим часом — однаковий протягом доби
-  function dayNumber() {
-    const now = new Date();
-    return Math.floor((now - now.getTimezoneOffset() * 60000) / 86400000);
-  }
-
   function thoughtCard() {
     const list = DATA.reflections;
     if (!list.length) {
@@ -26,14 +20,12 @@
           <blockquote>Перші роздуми з'являться, коли наповнимо розділ «Сенс».</blockquote>
         </div>`;
     }
-    const r = list[dayNumber() % list.length];
-    const quote = r.verse && r.verse.text ? r.verse.text : r.text;
-    const cite = r.verse && r.verse.text ? r.verse.ref : r.title;
+    const r = list[UI.dayNumber() % list.length];
     return `
-      <a class="card card-thought" href="#/sens/${UI.esc(r.id)}" style="text-decoration:none;color:inherit">
+      <a class="card card-thought card-link" href="#/sens/${UI.esc(r.id)}">
         <span class="label">Думка дня</span>
-        <blockquote>${UI.esc(quote)}</blockquote>
-        <cite>${UI.esc(cite)}</cite>
+        <blockquote>${UI.esc(r.verse.text || r.question)}</blockquote>
+        <cite>${UI.esc(r.verse.ref)} · ${UI.esc(r.title)} →</cite>
       </a>`;
   }
 

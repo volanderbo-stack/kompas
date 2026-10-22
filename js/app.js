@@ -7,6 +7,8 @@
 
   Router.add('/home', Screens.home);
   Router.add('/sens', Screens.sens, 'sens');
+  Router.add('/sens/:id', Screens.reflection, 'sens', true);
+  Router.add('/goal', Screens.goal, 'sens');
   Router.add('/people', Screens.people, 'people');
   Router.add('/tools', Screens.tools, 'tools');
   Router.add('/prompts', Screens.prompts, 'prompts');

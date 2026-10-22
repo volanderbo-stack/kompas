@@ -6,14 +6,15 @@ const Router = (() => {
   const routes = [];
   let view;
 
-  // path на кшталт '/lesson/:id'; tab — яку вкладку внизу підсвітити
-  function add(path, screen, tab = null) {
+  // path на кшталт '/lesson/:id'; tab — яку вкладку внизу підсвітити;
+  // remember — запам'ятати екран для кнопки «Продовжити, де зупинився»
+  function add(path, screen, tab = null, remember = false) {
     const keys = [];
     const pattern = path.replace(/:(\w+)/g, (_, key) => {
       keys.push(key);
       return '([^/]+)';
     });
-    routes.push({ re: new RegExp(`^${pattern}$`), keys, screen, tab });
+    routes.push({ re: new RegExp(`^${pattern}$`), keys, screen, tab, remember });
   }
 
   function current() {
@@ -38,15 +39,19 @@ const Router = (() => {
   }
 
   function render(route, params, path) {
-    const result = route.screen(params) || {};
+    const result = route.screen(params);
+    // Екран повертає null, якщо запис не знайдено (наприклад, видалений урок)
+    if (!result) {
+      go('/home');
+      return;
+    }
     view.innerHTML = `<div class="screen">${result.html || ''}</div>`;
     document.title = result.title ? `${result.title} · Компас` : 'Компас';
     setActiveTab(route.tab);
     window.scrollTo(0, 0);
     view.focus({ preventScroll: true });
     if (result.mount) result.mount(view.firstElementChild);
-    // Запам'ятовуємо останній відкритий матеріал (урок, роздум…) для «Продовжити»
-    if (route.keys.length) Store.update(s => { s.lastRoute = path; });
+    if (route.remember) Store.update(s => { s.lastRoute = path; });
   }
 
   function setActiveTab(tab) {

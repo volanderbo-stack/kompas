@@ -1,3 +1,6 @@
+// Стан застосунку, спільний для екранів
+const App = { installPrompt: null };
+
 // Запуск застосунку
 (() => {
   UI.applyTheme(Store.get().theme);
@@ -26,4 +29,24 @@
   Router.add('/settings', Screens.settings);
 
   Router.start();
+
+  // Офлайн-режим. Service worker не працює, якщо файл відкрито з диска (file://)
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+    const hadWorker = Boolean(navigator.serviceWorker.controller);
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (hadWorker) UI.toast('Застосунок оновлено — перезавантажте сторінку');
+    });
+  }
+
+  // Кнопка «Встановити» в налаштуваннях (Chrome і Edge на Android та ПК)
+  window.addEventListener('beforeinstallprompt', event => {
+    event.preventDefault();
+    App.installPrompt = event;
+    if (Router.current() === '/settings') Router.refresh();
+  });
+  window.addEventListener('appinstalled', () => {
+    App.installPrompt = null;
+    UI.toast('Компас встановлено ✓');
+  });
 })();

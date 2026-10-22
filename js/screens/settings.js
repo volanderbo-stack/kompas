@@ -6,6 +6,9 @@
     { value: 'dark', label: 'Темна' }
   ];
 
+  // Відкрито як встановлений застосунок (а не у вкладці браузера)
+  const installed = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+
   function exportBackup() {
     const blob = new Blob([Store.exportJSON()], { type: 'application/json' });
     const link = document.createElement('a');
@@ -43,6 +46,20 @@
           `).join('')}
         </div>
 
+        <h2 class="section-title">Застосунок</h2>
+        <div class="card">
+          ${installed()
+            ? '<p>✓ Компас встановлено на цей пристрій.</p>'
+            : App.installPrompt
+              ? `<p class="muted">Встановіть Компас як застосунок: окрема іконка на екрані і робота без інтернету.</p>
+                 <button type="button" class="btn btn-primary btn-block" data-action="install">${UI.icon('download')}Встановити застосунок</button>`
+              : `<p class="muted">Щоб додати Компас на головний екран:</p>
+                 <ul class="plain-list">
+                   <li><strong>Android (Chrome):</strong> меню ⋮ → «Додати на головний екран» або «Встановити застосунок»</li>
+                   <li><strong>iPhone (Safari):</strong> кнопка «Поділитися» → «На екран „Додому“»</li>
+                 </ul>`}
+        </div>
+
         <h2 class="section-title">Мої дані</h2>
         <div class="card">
           <p class="muted">Прогрес, цілі, промпти і проєкти зберігаються лише на цьому пристрої.
@@ -59,7 +76,7 @@
 
         <button type="button" class="btn btn-danger btn-block" data-action="reset">Скинути всі дані</button>
 
-        <p class="muted" style="text-align:center;font-size:14px">Компас · версія 0.1</p>`,
+        <p class="muted" style="text-align:center;font-size:14px">Компас · версія 1.0</p>`,
 
       mount(root) {
         root.querySelectorAll('[data-theme-choice]').forEach(btn => {
@@ -72,6 +89,18 @@
             });
           });
         });
+
+        const install = root.querySelector('[data-action="install"]');
+        if (install) {
+          install.addEventListener('click', async () => {
+            const prompt = App.installPrompt;
+            if (!prompt) return;
+            prompt.prompt();
+            await prompt.userChoice;
+            App.installPrompt = null;
+            Router.refresh();
+          });
+        }
 
         root.querySelector('[data-action="export"]').addEventListener('click', exportBackup);
 

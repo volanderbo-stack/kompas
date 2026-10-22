@@ -13,6 +13,8 @@
   Router.add('/people/:topic', Screens.topic, 'people');
   Router.add('/lesson/:id', Screens.lesson, 'people', true);
   Router.add('/tools', Screens.tools, 'tools');
+  Router.add('/tools/picker', Screens.picker, 'tools');
+  Router.add('/tool/:id', Screens.tool, 'tools');
   Router.add('/prompts', Screens.prompts, 'prompts');
   Router.add('/projects', Screens.projects, 'projects');
   Router.add('/settings', Screens.settings);

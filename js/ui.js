@@ -16,7 +16,10 @@ const UI = (() => {
     check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
     target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
     trash: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
-    plus: '<path d="M12 5v14M5 12h14"/>'
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    copy: '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/>',
+    external: '<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
+    grid: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>'
   };
 
   function icon(name, cls = 'icon') {
@@ -198,6 +201,53 @@ const UI = (() => {
     });
   }
 
+  // Копіювання в буфер обміну із запасним варіантом для старих браузерів і http
+  async function copyText(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (e) {
+      const area = document.createElement('textarea');
+      area.value = text;
+      area.setAttribute('readonly', '');
+      area.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+      document.body.appendChild(area);
+      area.select();
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch (err) { ok = false; }
+      area.remove();
+      return ok;
+    }
+  }
+
+  // Картка промпту з кнопкою «Копіювати»; extra — додаткові кнопки справа
+  function promptCard({ title, text, extra = '' }) {
+    return `
+      <div class="card prompt-card">
+        <div class="prompt-head">
+          <h3>${esc(title)}</h3>
+          ${extra}
+        </div>
+        <pre class="prompt-text">${esc(text)}</pre>
+        <button type="button" class="btn btn-secondary btn-block" data-copy>${icon('copy')}Копіювати</button>
+      </div>`;
+  }
+
+  // Оживляє всі кнопки «Копіювати» всередині root
+  function mountCopy(root) {
+    root.addEventListener('click', async e => {
+      const btn = e.target.closest('[data-copy]');
+      if (!btn) return;
+      const text = btn.closest('.prompt-card').querySelector('.prompt-text').textContent;
+      const ok = await copyText(text);
+      UI.toast(ok ? 'Скопійовано ✓' : 'Не вдалося скопіювати — виділіть текст вручну');
+      if (ok) {
+        btn.innerHTML = `${icon('check')}Скопійовано`;
+        setTimeout(() => { btn.innerHTML = `${icon('copy')}Копіювати`; }, 1800);
+      }
+    });
+  }
+
   // Тимчасова заглушка розділу, поки він не наповнений
   function sectionStub(key, soon, stage) {
     const s = DATA.sections[key];
@@ -236,6 +286,7 @@ const UI = (() => {
 
   return {
     icon, esc, pageHead, listItem, richText, dayNumber, debounce, autosave,
-    video, quiz, mountQuiz, sectionStub, toast, applyTheme, darkQuery
+    video, quiz, mountQuiz, copyText, promptCard, mountCopy,
+    sectionStub, toast, applyTheme, darkQuery
   };
 })();

@@ -87,7 +87,7 @@
 
         <article class="prose">${UI.richText(lesson.body)}</article>
 
-        ${UI.video({ videoUrl: lesson.videoUrl, videoQuery: lesson.videoQuery, title: lesson.title })}
+        ${UI.video({ ...lesson, title: lesson.title })}
 
         <h2 class="section-title">Перевір себе</h2>
         ${UI.quiz(lesson.quiz)}
@@ -115,6 +115,8 @@
           }
         };
         draw();
+
+        UI.mountVideo(root);
 
         UI.mountQuiz(root, lesson.quiz, result => {
           score = result;

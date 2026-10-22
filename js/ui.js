@@ -124,18 +124,58 @@ const UI = (() => {
     return m ? m[1] : null;
   }
 
-  // Блок «Відео»: плеєр, якщо є перевірене посилання, інакше — пошук на YouTube
-  function video({ videoUrl, videoQuery, title }) {
-    const id = youtubeId(videoUrl);
+  // "1:29" або "1:02:03" → секунди
+  function timeToSeconds(time) {
+    return String(time).split(':').map(Number).reduce((total, part) => total * 60 + part, 0);
+  }
+
+  function formatTime(sec) {
+    const h = Math.floor(sec / 3600);
+    const m = Math.floor(sec / 60) % 60;
+    const s = String(sec % 60).padStart(2, '0');
+    return h ? `${h}:${String(m).padStart(2, '0')}:${s}` : `${m}:${s}`;
+  }
+
+  // Початок з посилання: ?t=89, ?t=89s, ?t=1m29s або ?start=89
+  function videoStart(url) {
+    const m = String(url || '').match(/[?&](?:t|start)=(?:(\d+)h)?(?:(\d+)m)?(\d+)?s?(?:&|$)/);
+    if (!m) return 0;
+    return (Number(m[1]) || 0) * 3600 + (Number(m[2]) || 0) * 60 + (Number(m[3]) || 0);
+  }
+
+  const embedUrl = (id, start, autoplay = false) =>
+    `https://www.youtube-nocookie.com/embed/${id}?rel=0${start ? `&start=${start}` : ''}${autoplay ? '&autoplay=1' : ''}`;
+  const watchUrl = (id, start) => `https://www.youtube.com/watch?v=${id}${start ? `&t=${start}s` : ''}`;
+
+  // Плеєр + кнопки розділів. Без інтернету — лише посилання на YouTube
+  function videoPlayer({ url, title, chapters = [] }) {
+    const id = youtubeId(url);
+    if (!id) return '';
+    const start = videoStart(url);
+    const player = navigator.onLine
+      ? `<div class="video-frame">
+           <iframe src="${embedUrl(id, start)}" title="${esc(title)}" loading="lazy"
+             allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>
+         </div>`
+      : '<p class="muted">Плеєр доступний з інтернетом.</p>';
+    const list = chapters.map(c => {
+      const sec = timeToSeconds(c.time);
+      return `<a class="chapter" href="${watchUrl(id, sec)}" target="_blank" rel="noopener" data-seek="${sec}" data-video="${id}">
+        <span class="chapter-time">${esc(c.time)}</span><span>${esc(c.label)}</span></a>`;
+    }).join('');
+    return `
+      ${player}
+      ${list ? `<div class="chapters">${list}</div>` : ''}
+      <a class="small-note" href="${watchUrl(id, start)}" target="_blank" rel="noopener">Відкрити на YouTube${start ? ` з ${formatTime(start)}` : ''} ${icon('external', 'icon icon-inline')}</a>`;
+  }
+
+  // Блок «Відео» в уроці чи гайді: плеєр, якщо є перевірене посилання, інакше — пошук на YouTube
+  function video({ videoUrl, videoQuery, videoNote, videoChapters, title }) {
     let content;
-    if (id && !navigator.onLine) {
-      content = '<p class="muted">Відео доступне з інтернетом.</p>';
-    } else if (id) {
+    if (youtubeId(videoUrl)) {
       content = `
-        <div class="video-frame">
-          <iframe src="https://www.youtube-nocookie.com/embed/${id}" title="${esc(title)}" loading="lazy"
-            allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>
-        </div>`;
+        ${videoNote ? `<p class="muted small-note">${esc(videoNote)}</p>` : ''}
+        ${videoPlayer({ url: videoUrl, title, chapters: videoChapters })}`;
     } else {
       const q = encodeURIComponent(videoQuery || title);
       content = `
@@ -144,7 +184,20 @@ const UI = (() => {
           ${icon('play')}Знайти на YouTube
         </a>`;
     }
-    return `<section class="card"><span class="label">${icon('play')} Відео</span>${content}</section>`;
+    return `<section class="card video-card"><span class="label">${icon('play')} Відео</span>${content}</section>`;
+  }
+
+  // Кнопки розділів перемотують плеєр у тій самій картці (без інтернету — відкривається YouTube)
+  function mountVideo(root) {
+    root.addEventListener('click', e => {
+      const link = e.target.closest('[data-seek]');
+      if (!link) return;
+      const frame = link.closest('.video-card')?.querySelector('iframe');
+      if (!frame) return;
+      e.preventDefault();
+      frame.src = embedUrl(link.dataset.video, Number(link.dataset.seek), true);
+      frame.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
   }
 
   // Тест: questions = [{ q, options, correct, explain }]
@@ -273,7 +326,7 @@ const UI = (() => {
 
   return {
     icon, esc, pageHead, listItem, richText, dayNumber, debounce, autosave,
-    video, quiz, mountQuiz, copyText, promptCard, mountCopy,
+    video, videoPlayer, mountVideo, quiz, mountQuiz, copyText, promptCard, mountCopy,
     toast, applyTheme, darkQuery
   };
 })();

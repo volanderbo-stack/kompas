@@ -3,6 +3,40 @@
   const toolById = id => DATA.tools.find(t => t.id === id);
   const bullets = items => `<ul class="plain-list">${items.map(i => `<li>${UI.esc(i)}</li>`).join('')}</ul>`;
 
+  // Зовнішнє посилання на схему ШІ-інструментів у NotebookLM
+  function schemeCard() {
+    const s = DATA.toolsScheme;
+    if (!s || !s.url) return '';
+    return `
+      <a class="card card-link" href="${UI.esc(s.url)}" target="_blank" rel="noopener">
+        <span class="label">📓 ${UI.esc(s.title)} ${UI.icon('external', 'icon icon-inline')}</span>
+        <p class="muted small-note">${UI.esc(s.note)}</p>
+      </a>`;
+  }
+
+  // ===== Відеобібліотека =====
+  Screens.videos = () => ({
+    title: 'Відеобібліотека',
+    html: `
+      ${UI.pageHead({ title: 'Відеобібліотека', subtitle: 'Корисні відео про ШІ', back: '/tools' })}
+      <p class="muted small-note">Натисніть на розділ — плеєр перейде до потрібного місця.</p>
+      <div class="list">
+        ${DATA.videos.map(v => `
+          <article class="card video-card">
+            <h3 class="video-title">${UI.esc(v.title)}</h3>
+            <p class="muted small-note">${UI.esc(v.author)} · ${UI.esc(v.duration)} · ${UI.esc(v.language)}</p>
+            <p>${UI.esc(v.description)}</p>
+            ${UI.videoPlayer({ url: v.url, title: v.title, chapters: v.chapters })}
+            ${v.chaptersSource ? `<p class="muted small-note">Розділи: ${UI.esc(v.chaptersSource)}.</p>` : ''}
+          </article>`).join('')}
+      </div>
+      ${schemeCard()}`,
+
+    mount(root) {
+      UI.mountVideo(root);
+    }
+  });
+
   // ===== Список інструментів =====
   Screens.tools = () => {
     const s = DATA.sections.tools;
@@ -15,6 +49,13 @@
           <span class="label">${UI.icon('grid')} Який інструмент обрати?</span>
           <p>Таблиця «задача → інструмент» на ${DATA.toolPicker.length} типових ситуацій.</p>
         </a>
+
+        <a class="card card-link" href="#/videos">
+          <span class="label">${UI.icon('play')} Відеобібліотека</span>
+          <p>${DATA.videos.length} корисних відео про ШІ з переходом до потрібних розділів.</p>
+        </a>
+
+        ${schemeCard()}
 
         <h2 class="section-title">Гайди</h2>
         <div class="list">
@@ -70,10 +111,11 @@
           ${t.prompts.map(p => UI.promptCard(p)).join('')}
         </div>
 
-        ${UI.video({ videoUrl: t.videoUrl, videoQuery: t.videoQuery, title: t.name })}`,
+        ${UI.video({ ...t, title: t.name })}`,
 
       mount(root) {
         UI.mountCopy(root);
+        UI.mountVideo(root);
       }
     };
   };

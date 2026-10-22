@@ -1,7 +1,7 @@
 // Service worker «Компаса»: робота офлайн.
 // Після змін у файлах збільште VERSION — тоді старий кеш видалиться.
 // Додали новий файл — допишіть його у FILES.
-const VERSION = 'kompas-v1';
+const VERSION = 'kompas-v2';
 
 const FILES = [
   './',

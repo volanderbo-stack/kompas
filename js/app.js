@@ -18,6 +18,7 @@ const App = { installPrompt: null };
   Router.add('/tools', Screens.tools, 'tools');
   Router.add('/tools/picker', Screens.picker, 'tools');
   Router.add('/tool/:id', Screens.tool, 'tools');
+  Router.add('/videos', Screens.videos, 'tools');
   Router.add('/prompts', Screens.prompts, 'prompts');
   Router.add('/prompts/guide', Screens.promptGuide, 'prompts');
   Router.add('/prompts/new', Screens.promptForm, 'prompts');

@@ -8,6 +8,11 @@
   Правила:
   - videoUrl — посилання на YouTube, яке ви перевірили самі. Порожньо "" —
     тоді в застосунку буде кнопка «Знайти на YouTube» за запитом videoQuery.
+    Щоб відео стартувало з потрібного місця, додайте ?t=секунди
+    (наприклад, https://youtu.be/XgpIMKP2pUA?t=89 — це 1:29).
+    videoNote — підпис під плеєром; videoChapters: [{ time: "28:30", label }] —
+    кнопки переходу до моментів у тому самому плеєрі.
+  - Нове відео в бібліотеку — запис у videos (url, назва, автор, опис, розділи).
   - Вірші — переклад Огієнка. Якщо текст ще не звірений, лишайте text: ""
     і коментар // ПЕРЕВІРИТИ.
   - Після зміни файлу просто оновіть сторінку.
@@ -598,7 +603,13 @@ const DATA = {
       ],
       officialUrl: "https://claude.com/pricing",
       lastChecked: "жовтень 2026",
-      videoUrl: "",
+      videoUrl: "https://youtu.be/XgpIMKP2pUA?t=89",
+      videoNote: "Огляд «ТОП-9 ИИ-инструментов» (російською) — з 1:29 про Claude",
+      videoChapters: [
+        { time: "1:29", label: "Claude: проєкти і тексти" },
+        { time: "27:29", label: "Застосунок Claude і Cowork" },
+        { time: "28:30", label: "Claude Code" }
+      ],
       videoQuery: "Claude Code для початківців як створити застосунок"
     },
     {
@@ -641,7 +652,9 @@ const DATA = {
       ],
       officialUrl: "https://gemini.google.com",
       lastChecked: "жовтень 2026",
-      videoUrl: "",
+      videoUrl: "https://youtu.be/XgpIMKP2pUA?t=536",
+      videoNote: "Огляд «ТОП-9 ИИ-инструментов» (російською) — з 8:56 про Gemini",
+      videoChapters: [{ time: "8:56", label: "Gemini" }],
       videoQuery: "Gemini Deep Research як користуватися"
     },
     {
@@ -680,7 +693,9 @@ const DATA = {
       ],
       officialUrl: "https://chatgpt.com",
       lastChecked: "жовтень 2026",
-      videoUrl: "",
+      videoUrl: "https://youtu.be/XgpIMKP2pUA?t=307",
+      videoNote: "Огляд «ТОП-9 ИИ-инструментов» (російською) — з 5:07 про ChatGPT",
+      videoChapters: [{ time: "5:07", label: "ChatGPT" }],
       videoQuery: "ChatGPT безкоштовно як користуватися поради"
     },
     {
@@ -718,7 +733,9 @@ const DATA = {
       ],
       officialUrl: "https://notebooklm.google.com",
       lastChecked: "жовтень 2026",
-      videoUrl: "",
+      videoUrl: "https://youtu.be/XgpIMKP2pUA?t=914",
+      videoNote: "Огляд «ТОП-9 ИИ-инструментов» (російською) — з 15:14 про NotebookLM",
+      videoChapters: [{ time: "15:14", label: "NotebookLM" }],
       videoQuery: "NotebookLM як користуватися українською"
     },
     {
@@ -754,8 +771,79 @@ const DATA = {
       ],
       officialUrl: "https://www.perplexity.ai",
       lastChecked: "жовтень 2026",
-      videoUrl: "",
+      videoUrl: "https://youtu.be/XgpIMKP2pUA?t=1340",
+      videoNote: "Огляд «ТОП-9 ИИ-инструментов» (російською) — з 22:20 про Perplexity",
+      videoChapters: [{ time: "22:20", label: "Perplexity" }],
       videoQuery: "Perplexity AI як користуватися"
+    }
+  ],
+
+  // Схема ШІ-інструментів у NotebookLM (відкривається після входу в Google-акаунт)
+  toolsScheme: {
+    title: "Схема ШІ-інструментів",
+    note: "Матеріал у NotebookLM. Для перегляду потрібен вхід у Google-акаунт.",
+    url: "https://notebooklm.link.google/3B6S9TJgIxPM"
+  },
+
+  // ===== Відеобібліотека. Лише перевірені відео; розділи — з описів авторів або з розшифровки =====
+  videos: [
+    {
+      id: "top9-ai-tools",
+      title: "ТОП-9 ИИ-инструментов, которыми я пользуюсь каждый день",
+      author: "Кайсар Курмангалиев",
+      duration: "35 хв",
+      language: "російською",
+      description: "Огляд ШІ-інструментів, якими автор користується щодня: Claude, ChatGPT, Gemini, NotebookLM, Perplexity, Claude Code та інші — і для яких задач кожен підходить.",
+      url: "https://youtu.be/XgpIMKP2pUA",
+      chaptersSource: "за розшифровкою відео",
+      chapters: [
+        { time: "1:29", label: "Claude" },
+        { time: "5:07", label: "ChatGPT" },
+        { time: "8:56", label: "Gemini" },
+        { time: "15:14", label: "NotebookLM" },
+        { time: "22:20", label: "Perplexity" },
+        { time: "27:29", label: "Застосунок Claude і Cowork" },
+        { time: "28:30", label: "Claude Code" }
+      ]
+    },
+    {
+      id: "claude-code-sites",
+      title: "Как делать сайты на $10 000 с помощью Claude Code",
+      author: "Кайсар Курмангалиев",
+      duration: "44 хв",
+      language: "російською",
+      description: "Покроковий туторіал: встановлення Claude Code, сайт за референсом, скіли для дизайну, публікація через GitHub і Vercel, домен і форма заявок із записом у Google Таблиці.",
+      url: "https://youtu.be/KOYnQAfMG7Q",
+      chaptersSource: "таймкоди автора",
+      chapters: [
+        { time: "0:00", label: "Вступ і можливості Claude Code" },
+        { time: "1:21", label: "Встановлення і робоча папка" },
+        { time: "2:49", label: "Референси і початок дизайну" },
+        { time: "7:38", label: "Моделі й скіли для дизайну" },
+        { time: "11:42", label: "Наповнення сайту, анімації" },
+        { time: "13:56", label: "Візуальні ефекти" },
+        { time: "16:39", label: "Публікація: GitHub і Vercel, домен" },
+        { time: "21:13", label: "Форма заявок і Google Таблиці" },
+        { time: "30:23", label: "Другий і третій сайти, motion-ефекти" }
+      ]
+    },
+    {
+      id: "claude-code-video-editing",
+      title: "Claude Code только что изменил МОНТАЖ видео навсегда",
+      author: "Никита Велс",
+      duration: "25 хв",
+      language: "російською",
+      description: "Як монтувати відео і робити моушн-графіку в Claude Code за допомогою безкоштовних репозиторіїв і скілів (video-use, Hyperframes, Remotion та інші) і як Claude «бачить» відео.",
+      url: "https://youtu.be/Ixf10r5EHDU",
+      chaptersSource: "таймкоди автора",
+      chapters: [
+        { time: "0:00", label: "Ролик, змонтований Claude Code" },
+        { time: "1:05", label: "Що виходить без інструментів" },
+        { time: "3:45", label: "Репозиторії для монтажу; як Claude «бачить» відео" },
+        { time: "12:15", label: "Монтаж сирого запису і пакування в скіл" },
+        { time: "16:50", label: "Моушн-графіка на Hyperframes" },
+        { time: "21:45", label: "Результат і список 15 репозиторіїв" }
+      ]
     }
   ],
 

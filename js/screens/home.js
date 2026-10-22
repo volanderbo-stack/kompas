@@ -36,7 +36,9 @@
     const today = new Date().toLocaleDateString('uk-UA', { weekday: 'long', day: 'numeric', month: 'long' });
     const cont = s.lastRoute
       ? { href: s.lastRoute, label: 'Продовжити, де зупинився' }
-      : { href: '/people', label: 'Почати навчання' };
+      : DATA.lessons.length
+        ? { href: `/lesson/${DATA.lessons[0].id}`, label: 'Почати перший урок' }
+        : { href: '/people', label: 'Почати навчання' };
 
     return {
       title: 'Головна',

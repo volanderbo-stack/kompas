@@ -58,17 +58,32 @@ const UI = (() => {
   // Простий текст із data.js → HTML: абзаци, списки "- ", підзаголовки "## ", **жирний**
   function richText(text) {
     const inline = s => esc(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-    return String(text || '').split(/\n\s*\n/).map(block => {
-      const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
-      if (!lines.length) return '';
-      if (lines.every(l => l.startsWith('- '))) {
-        return `<ul>${lines.map(l => `<li>${inline(l.slice(2))}</li>`).join('')}</ul>`;
+    const out = [];
+    let list = [];
+    let para = [];
+    const flush = () => {
+      if (list.length) out.push(`<ul>${list.map(l => `<li>${inline(l)}</li>`).join('')}</ul>`);
+      if (para.length) out.push(`<p>${para.map(inline).join('<br>')}</p>`);
+      list = [];
+      para = [];
+    };
+    for (const raw of String(text || '').split('\n')) {
+      const line = raw.trim();
+      if (!line) {
+        flush();
+      } else if (line.startsWith('## ')) {
+        flush();
+        out.push(`<h3>${inline(line.slice(3))}</h3>`);
+      } else if (line.startsWith('- ')) {
+        if (para.length) flush();
+        list.push(line.slice(2));
+      } else {
+        if (list.length) flush();
+        para.push(line);
       }
-      if (lines.length === 1 && lines[0].startsWith('## ')) {
-        return `<h3>${inline(lines[0].slice(3))}</h3>`;
-      }
-      return `<p>${lines.map(inline).join('<br>')}</p>`;
-    }).join('');
+    }
+    flush();
+    return out.join('');
   }
 
   // Номер дня за місцевим часом — однаковий протягом доби (для «Думки дня»)
@@ -95,6 +110,91 @@ const UI = (() => {
     field.addEventListener('input', () => {
       hint.textContent = '…';
       commit();
+    });
+  }
+
+  // ID ролика з посилань виду watch?v=, youtu.be/, shorts/, embed/
+  function youtubeId(url) {
+    const m = String(url || '').match(/(?:youtube(?:-nocookie)?\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/);
+    return m ? m[1] : null;
+  }
+
+  // Блок «Відео»: плеєр, якщо є перевірене посилання, інакше — пошук на YouTube
+  function video({ videoUrl, videoQuery, title }) {
+    const id = youtubeId(videoUrl);
+    let content;
+    if (id && !navigator.onLine) {
+      content = '<p class="muted">Відео доступне з інтернетом.</p>';
+    } else if (id) {
+      content = `
+        <div class="video-frame">
+          <iframe src="https://www.youtube-nocookie.com/embed/${id}" title="${esc(title)}" loading="lazy"
+            allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>
+        </div>`;
+    } else {
+      const q = encodeURIComponent(videoQuery || title);
+      content = `
+        <p class="muted">Перевірене відео ще не додано. Можна знайти за готовим запитом:</p>
+        <a class="btn btn-secondary btn-block" href="https://www.youtube.com/results?search_query=${q}" target="_blank" rel="noopener">
+          ${icon('play')}Знайти на YouTube
+        </a>`;
+    }
+    return `<section class="card"><span class="label">${icon('play')} Відео</span>${content}</section>`;
+  }
+
+  // Тест: questions = [{ q, options, correct, explain }]
+  function quiz(questions) {
+    return `
+      <section class="quiz" data-quiz>
+        ${questions.map((item, qi) => `
+          <fieldset class="card quiz-question" data-q="${qi}">
+            <legend class="visually-hidden">Питання ${qi + 1}</legend>
+            <span class="label">Питання ${qi + 1} з ${questions.length}</span>
+            <p class="question">${esc(item.q)}</p>
+            <div class="quiz-options">
+              ${item.options.map((opt, oi) => `
+                <button type="button" class="quiz-option" data-o="${oi}">${esc(opt)}</button>
+              `).join('')}
+            </div>
+            <p class="quiz-explain" hidden></p>
+          </fieldset>`).join('')}
+        <p class="quiz-result card" hidden aria-live="polite"></p>
+      </section>`;
+  }
+
+  // Оживляє тест; onComplete(score) викликається, коли відповіли на всі питання
+  function mountQuiz(root, questions, onComplete) {
+    const box = root.querySelector('[data-quiz]');
+    const answers = new Array(questions.length).fill(null);
+
+    box.addEventListener('click', e => {
+      const btn = e.target.closest('.quiz-option');
+      if (!btn) return;
+      const card = btn.closest('[data-q]');
+      const qi = Number(card.dataset.q);
+      if (answers[qi] !== null) return;
+
+      const chosen = Number(btn.dataset.o);
+      const item = questions[qi];
+      answers[qi] = chosen;
+
+      card.querySelectorAll('.quiz-option').forEach(b => {
+        const oi = Number(b.dataset.o);
+        b.disabled = true;
+        if (oi === item.correct) b.classList.add('is-correct');
+        else if (oi === chosen) b.classList.add('is-wrong');
+      });
+      const explain = card.querySelector('.quiz-explain');
+      explain.innerHTML = `<strong>${chosen === item.correct ? 'Правильно!' : 'Не зовсім.'}</strong> ${esc(item.explain || '')}`;
+      explain.hidden = false;
+
+      if (answers.every(a => a !== null)) {
+        const score = answers.filter((a, i) => a === questions[i].correct).length;
+        const result = box.querySelector('.quiz-result');
+        result.textContent = `Результат: ${score} з ${questions.length}. ${score === questions.length ? 'Чудово! 🎉' : 'Перегляньте пояснення вище.'}`;
+        result.hidden = false;
+        onComplete(score);
+      }
     });
   }
 
@@ -136,6 +236,6 @@ const UI = (() => {
 
   return {
     icon, esc, pageHead, listItem, richText, dayNumber, debounce, autosave,
-    sectionStub, toast, applyTheme, darkQuery
+    video, quiz, mountQuiz, sectionStub, toast, applyTheme, darkQuery
   };
 })();

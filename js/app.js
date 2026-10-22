@@ -20,6 +20,9 @@
   Router.add('/prompts/new', Screens.promptForm, 'prompts');
   Router.add('/prompts/edit/:id', Screens.promptForm, 'prompts');
   Router.add('/projects', Screens.projects, 'projects');
+  Router.add('/projects/path', Screens.projectPath, 'projects');
+  Router.add('/projects/new', Screens.projectForm, 'projects');
+  Router.add('/project/:id', Screens.projectForm, 'projects');
   Router.add('/settings', Screens.settings);
 
   Router.start();

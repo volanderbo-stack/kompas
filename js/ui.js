@@ -253,24 +253,6 @@ const UI = (() => {
     });
   }
 
-  // Тимчасова заглушка розділу, поки він не наповнений
-  function sectionStub(key, soon, stage) {
-    const s = DATA.sections[key];
-    return {
-      title: s.title,
-      html: `
-        ${pageHead({ title: s.title, subtitle: s.subtitle })}
-        <div class="card">
-          <p>${esc(s.intro)}</p>
-        </div>
-        <h2 class="section-title">Що тут буде</h2>
-        <div class="card">
-          <ul class="plain-list">${soon.map(t => `<li>${esc(t)}</li>`).join('')}</ul>
-          <p class="muted">Розділ наповнюється на етапі ${stage}.</p>
-        </div>`
-    };
-  }
-
   let toastTimer;
   function toast(message) {
     const el = document.getElementById('toast');
@@ -292,6 +274,6 @@ const UI = (() => {
   return {
     icon, esc, pageHead, listItem, richText, dayNumber, debounce, autosave,
     video, quiz, mountQuiz, copyText, promptCard, mountCopy,
-    sectionStub, toast, applyTheme, darkQuery
+    toast, applyTheme, darkQuery
   };
 })();

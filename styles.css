@@ -521,6 +521,35 @@ kbd {
 select.field { appearance: auto; }
 .form-error { color: var(--danger); font-weight: 600; }
 
+/* ===== «Проєкти» ===== */
+.path-line { font-weight: 650; }
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip-link { display: inline-flex; align-items: center; text-decoration: none; font-size: 14px; }
+.chip-link:hover { border-color: var(--accent-fill); }
+
+.project-card { gap: 8px; }
+.project-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.project-top h3 { font-size: 17px; }
+.project-goal {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 15px;
+}
+.badge {
+  flex: none;
+  padding: 3px 10px;
+  border-radius: 99px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.overdue { color: var(--danger); font-weight: 600; }
+.stage-hint { gap: 8px; }
+
 /* Таблиця вибору: на широкому екрані — таблиця, на телефоні — картки */
 .picker {
   width: 100%;

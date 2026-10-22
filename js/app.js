@@ -1,0 +1,17 @@
+// Запуск застосунку
+(() => {
+  UI.applyTheme(Store.get().theme);
+  UI.darkQuery.addEventListener('change', () => {
+    if (Store.get().theme === 'system') UI.applyTheme('system');
+  });
+
+  Router.add('/home', Screens.home);
+  Router.add('/sens', Screens.sens, 'sens');
+  Router.add('/people', Screens.people, 'people');
+  Router.add('/tools', Screens.tools, 'tools');
+  Router.add('/prompts', Screens.prompts, 'prompts');
+  Router.add('/projects', Screens.projects, 'projects');
+  Router.add('/settings', Screens.settings);
+
+  Router.start();
+})();

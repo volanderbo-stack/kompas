@@ -442,6 +442,85 @@ textarea.field { resize: vertical; }
   word-break: break-word;
 }
 
+.prompt-actions { display: flex; flex: none; margin: -8px -8px 0 0; }
+.star-btn[aria-pressed="true"] { color: var(--accent-fill); }
+.star-btn[aria-pressed="true"] svg { fill: currentColor; }
+
+/* ===== «Промпти» ===== */
+.chips {
+  display: flex;
+  gap: 8px;
+  margin: -4px -16px 0;
+  padding: 4px 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  flex: none;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color .2s ease, color .2s ease, border-color .2s ease;
+}
+.chip[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+.steps { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.step { flex-direction: row; align-items: flex-start; gap: 14px; }
+.step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--accent-fill);
+  color: var(--on-accent);
+  font-weight: 750;
+}
+.step-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.step-body h3 { font-size: 17px; }
+.step-example {
+  margin-top: 4px;
+  padding: 8px 12px;
+  border-left: 3px solid var(--accent-fill);
+  border-radius: 0 8px 8px 0;
+  background: var(--surface-2);
+  font-size: 15px;
+}
+
+.card-bad { border-color: var(--danger); }
+.card-bad .label { color: var(--danger); }
+.principle { gap: 4px; padding: 14px 16px; }
+.principle h3 { font-size: 16px; }
+
+.commands { display: grid; grid-template-columns: auto 1fr; gap: 10px 14px; margin: 0; align-items: baseline; }
+.commands dd { margin: 0; color: var(--muted); font-size: 15px; }
+kbd {
+  display: inline-block;
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 8px;
+  background: var(--surface-2);
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.form { gap: 8px; }
+.form .btn { margin-top: 8px; }
+select.field { appearance: auto; }
+.form-error { color: var(--danger); font-weight: 600; }
+
 /* Таблиця вибору: на широкому екрані — таблиця, на телефоні — картки */
 .picker {
   width: 100%;

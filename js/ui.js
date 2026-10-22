@@ -19,6 +19,8 @@ const UI = (() => {
     plus: '<path d="M12 5v14M5 12h14"/>',
     copy: '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/>',
     external: '<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
+    star: '<path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/>',
+    edit: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',
     grid: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>'
   };
 
@@ -220,13 +222,16 @@ const UI = (() => {
     }
   }
 
-  // Картка промпту з кнопкою «Копіювати»; extra — додаткові кнопки справа
-  function promptCard({ title, text, extra = '' }) {
+  // Картка промпту з кнопкою «Копіювати»; meta — підпис під назвою, extra — кнопки справа
+  function promptCard({ title, text, meta = '', extra = '' }) {
     return `
       <div class="card prompt-card">
         <div class="prompt-head">
-          <h3>${esc(title)}</h3>
-          ${extra}
+          <div>
+            <h3>${esc(title)}</h3>
+            ${meta ? `<span class="muted small-note">${esc(meta)}</span>` : ''}
+          </div>
+          ${extra ? `<div class="prompt-actions">${extra}</div>` : ''}
         </div>
         <pre class="prompt-text">${esc(text)}</pre>
         <button type="button" class="btn btn-secondary btn-block" data-copy>${icon('copy')}Копіювати</button>

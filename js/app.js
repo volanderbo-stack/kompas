@@ -16,6 +16,9 @@
   Router.add('/tools/picker', Screens.picker, 'tools');
   Router.add('/tool/:id', Screens.tool, 'tools');
   Router.add('/prompts', Screens.prompts, 'prompts');
+  Router.add('/prompts/guide', Screens.promptGuide, 'prompts');
+  Router.add('/prompts/new', Screens.promptForm, 'prompts');
+  Router.add('/prompts/edit/:id', Screens.promptForm, 'prompts');
   Router.add('/projects', Screens.projects, 'projects');
   Router.add('/settings', Screens.settings);
 

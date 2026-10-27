@@ -27,6 +27,13 @@ const App = { installPrompt: null };
   Router.add('/projects/path', Screens.projectPath, 'projects');
   Router.add('/projects/new', Screens.projectForm, 'projects');
   Router.add('/project/:id', Screens.projectForm, 'projects');
+  Router.add('/budget', Screens.budget);
+  Router.add('/budget/menu', Screens.menuPrompt);
+  Router.add('/budget/compare', Screens.comparePrompt);
+  Router.add('/time', Screens.time);
+  Router.add('/time/steps', Screens.stepsPrompt);
+  Router.add('/time/plan', Screens.plans);
+  Router.add('/time/plan/:id', Screens.plan);
   Router.add('/settings', Screens.settings);
 
   Router.start();

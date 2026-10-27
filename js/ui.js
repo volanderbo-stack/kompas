@@ -8,6 +8,8 @@ const UI = (() => {
     tools: '<path d="M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/>',
     prompts: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l3 3-3 3M13 15h4"/>',
     projects: '<path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/>',
+    budget: '<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.6 12.1a1.5 1.5 0 0 0 1.5 1.2h8.7a1.5 1.5 0 0 0 1.5-1.2L21 7H6"/>',
+    time: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
     chevronRight: '<path d="M9 6l6 6-6 6"/>',
     chevronLeft: '<path d="M15 18l-6-6 6-6"/>',
     download: '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
@@ -275,8 +277,9 @@ const UI = (() => {
     }
   }
 
-  // Картка промпту з кнопкою «Копіювати»; meta — підпис під назвою, extra — кнопки справа
-  function promptCard({ title, text, meta = '', extra = '' }) {
+  // Картка промпту з кнопкою «Копіювати»; meta — підпис під назвою, extra — кнопки справа,
+  // copyLabel — напис на кнопці
+  function promptCard({ title, text, meta = '', extra = '', copyLabel = 'Копіювати' }) {
     return `
       <div class="card prompt-card">
         <div class="prompt-head">
@@ -287,7 +290,7 @@ const UI = (() => {
           ${extra ? `<div class="prompt-actions">${extra}</div>` : ''}
         </div>
         <pre class="prompt-text">${esc(text)}</pre>
-        <button type="button" class="btn btn-secondary btn-block" data-copy>${icon('copy')}Копіювати</button>
+        <button type="button" class="btn btn-secondary btn-block" data-copy data-label="${esc(copyLabel)}">${icon('copy')}${esc(copyLabel)}</button>
       </div>`;
   }
 
@@ -301,7 +304,7 @@ const UI = (() => {
       UI.toast(ok ? 'Скопійовано ✓' : 'Не вдалося скопіювати — виділіть текст вручну');
       if (ok) {
         btn.innerHTML = `${icon('check')}Скопійовано`;
-        setTimeout(() => { btn.innerHTML = `${icon('copy')}Копіювати`; }, 1800);
+        setTimeout(() => { btn.innerHTML = `${icon('copy')}${esc(btn.dataset.label || 'Копіювати')}`; }, 1800);
       }
     });
   }

@@ -1,6 +1,6 @@
 // Головний екран: привітання, думка дня, прогрес, «Продовжити»
 (() => {
-  const SECTIONS = ['sens', 'people', 'tools', 'prompts', 'projects'];
+  const SECTIONS = ['sens', 'people', 'tools', 'prompts', 'projects', 'budget', 'time'];
 
   function greeting() {
     const h = new Date().getHours();

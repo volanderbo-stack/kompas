@@ -12,7 +12,8 @@ const Store = (() => {
       lastRoute: null,                          // для «Продовжити, де зупинився»
       goal: { life: '', year: [] },             // year: [{ id, text, done }]
       prompts: { custom: [], favorites: [] },
-      projects: []
+      projects: [],
+      life: { recent: [], plans: [] }           // останні промпти і плани-чеклисти
     };
   }
 

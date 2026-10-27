@@ -1,7 +1,7 @@
 // Service worker «Компаса»: робота офлайн.
 // Після змін у файлах збільште VERSION — тоді старий кеш видалиться.
 // Додали новий файл — допишіть його у FILES.
-const VERSION = 'kompas-v2';
+const VERSION = 'kompas-v3';
 
 const FILES = [
   './',
@@ -19,6 +19,7 @@ const FILES = [
   './js/screens/tools.js',
   './js/screens/prompts.js',
   './js/screens/projects.js',
+  './js/screens/life.js',
   './js/screens/settings.js',
   './icons/icon.svg',
   './icons/icon-192.png',
